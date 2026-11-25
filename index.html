@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>天選菇舍・宿管心理測驗員</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            maru: ['"Zen Maru Gothic"', 'sans-serif'],
+          },
+          colors: {
+            wood: {
+              50: '#F9F6F0',
+              100: '#F2EBD9',
+              200: '#E5D7B7',
+              600: '#8C6D46',
+              700: '#6E4F28',
+              800: '#533B1E',
+              900: '#3A2712'
+            },
+            moss: {
+              100: '#EAF3DE',
+              500: '#5F8D4E',
+              600: '#466F36',
+              700: '#345528'
+            },
+            warmbg: '#FAF7F2'
+          },
+          boxShadow: {
+            'stamp': '0 8px 0px 0px rgba(83, 59, 30, 0.8)',
+            'btn': '0 5px 0px 0px #533B1E',
+            'btn-active': '0 2px 0px 0px #533B1E',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      background-color: #FAF7F2;
+      background-image: radial-gradient(#E8DFC9 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .card-board {
+      border: 3.5px solid #533B1E;
+      box-shadow: 6px 7px 0px 0px #533B1E;
+    }
+
+    .badge-stamp {
+      border: 2px dashed #93382D;
+      color: #93382D;
+      transform: rotate(-7deg);
+    }
+
+    .animate-float {
+      animation: floating 3s ease-in-out infinite;
+    }
+
+    @keyframes floating {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-7px) rotate(1.5deg); }
+    }
+
+    .toast-transition {
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+  </style>
+</head>
+<body class="min-h-screen text-stone-800 flex flex-col justify-between p-3 sm:p-5 select-none antialiased">
+
+  <!-- 頂部資訊列 -->
+  <header class="w-full max-w-md mx-auto flex items-center justify-between py-2 px-1">
+    <div class="flex items-center gap-2">
+      <!-- 宿舍門禁鑰匙圖標 -->
+      <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-wood-200 border-2 border-wood-800 shadow-sm">
+        <svg class="w-4 h-4 text-wood-900" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+        </svg>
+      </span>
+      <span class="text-xs font-bold tracking-wider text-wood-800 bg-wood-100 px-2.5 py-1 rounded-full border border-wood-700/30">
+        外埔菇菇第 9 號舍區
+      </span>
+    </div>
+    <div class="text-xs font-bold text-moss-700 flex items-center gap-1.5 bg-moss-100 px-3 py-1 rounded-full border border-moss-500/30">
+      <span class="w-2 h-2 rounded-full bg-moss-500 animate-ping"></span>
+      宿管室：查房中
+    </div>
+  </header>
+
+  <!-- 主內容容器 (固定最大寬度，適應手機端與限動比例) -->
+  <main class="w-full max-w-md mx-auto my-auto flex flex-col justify-center">
+
+    <!-- ==================== 1. 歡迎與暱稱輸入首頁 ==================== -->
+    <div id="screen-welcome" class="card-board bg-white rounded-3xl p-6 sm:p-7 relative transition-all duration-300">
+      
+      <!-- 宿管阿香 SVG 插畫 -->
+      <div class="flex justify-center -mt-14 mb-2">
+        <div class="relative animate-float">
+          <svg class="w-28 h-28 drop-shadow-md" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- 菇菇菌蓋 (暗紅帶斑點，復古有型) -->
+            <path d="M16 65C16 35 34 16 60 16C86 16 104 35 104 65C104 70 98 73 60 73C22 73 16 70 16 65Z" fill="#A84435" stroke="#3A2712" stroke-width="3.5"/>
+            <!-- 菇傘斑點 -->
+            <circle cx="36" cy="38" r="7" fill="#FCECE9"/>
+            <circle cx="62" cy="28" r="6" fill="#FCECE9"/>
+            <circle cx="85" cy="45" r="8" fill="#FCECE9"/>
+            <!-- 菌褶陰影 -->
+            <ellipse cx="60" cy="71" rx="42" ry="7" fill="#DFCEB2" stroke="#3A2712" stroke-width="2.5"/>
+            <!-- 菇身 -->
+            <rect x="42" y="70" width="36" height="38" rx="16" fill="#FFFDF8" stroke="#3A2712" stroke-width="3.5"/>
+            <!-- 宿管黑框墨鏡（傲嬌魂靈魂） -->
+            <rect x="37" y="75" width="18" height="12" rx="3" fill="#2C231E" stroke="#3A2712" stroke-width="1.5"/>
+            <rect x="65" y="75" width="18" height="12" rx="3" fill="#2C231E" stroke="#3A2712" stroke-width="1.5"/>
+            <path d="M55 80H65" stroke="#2C231E" stroke-width="3"/>
+            <!-- 墨鏡反光 -->
+            <line x1="40" y1="78" x2="44" y2="84" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="68" y1="78" x2="72" y2="84" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- 宿管嘟嘴/微撇嘴表情 -->
+            <path d="M56 94C58 92 63 93 65 92" stroke="#3A2712" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- 宿管小手插腰 -->
+            <ellipse cx="36" cy="88" rx="4" ry="6" fill="#FFFDF8" stroke="#3A2712" stroke-width="2.5"/>
+            <ellipse cx="84" cy="88" rx="4" ry="6" fill="#FFFDF8" stroke="#3A2712" stroke-width="2.5"/>
+            <!-- 宿管鑰匙串掛在身上 -->
+            <circle cx="75" cy="95" r="4" fill="#E5D7B7" stroke="#3A2712" stroke-width="1.5"/>
+            <path d="M75 99V105M73 103H77" stroke="#3A2712" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <div class="absolute -bottom-1 -right-2 bg-amber-400 border-2 border-wood-900 text-wood-900 text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm rotate-6">
+            宿管・阿香
+          </div>
+        </div>
+      </div>
+
+      <!-- 標題與對白框 -->
+      <div class="text-center mt-1">
+        <span class="inline-block bg-wood-100 text-wood-800 text-xs px-3 py-1 rounded-full font-bold mb-1.5 border border-wood-600/20">
+          外埔菇農社群 × 房客性格檢定
+        </span>
+        <h1 class="text-2xl sm:text-3xl font-black text-wood-900 tracking-tight">
+          天選菇舍・宿管心理測驗
+        </h1>
+      </div>
+
+      <!-- 傲嬌對話氣泡 -->
+      <div class="my-4 bg-wood-50 border-2 border-wood-600/40 rounded-2xl p-4 relative text-sm sm:text-base leading-relaxed text-wood-800 font-medium">
+        <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-wood-50 border-t-2 border-l-2 border-wood-600/40 rotate-45"></div>
+        「扣扣扣！敲什麼敲？外埔菇舍可不是誰都能隨便搬進來的！<br class="hidden sm:inline">
+        這裏日照良好、濕度90%，想拿鑰匙？先通過本宿管這關！」
+      </div>
+
+      <!-- 姓名輸入表單 -->
+      <div class="space-y-4">
+        <div>
+          <label for="user-name" class="block text-xs font-bold text-wood-700 mb-1.5 ml-1">
+            🏷️ 登記擬入住的大名／綽號：
+          </label>
+          <input 
+            type="text" 
+            id="user-name" 
+            maxlength="10" 
+            placeholder="例如：熬夜小香菇、週五吃鍋狂人" 
+            class="w-full bg-wood-50/70 border-2 border-wood-700 rounded-xl px-4 py-3 text-wood-900 placeholder-wood-600/50 font-bold focus:outline-none focus:ring-2 focus:ring-moss-500 focus:bg-white transition-all"
+          >
+          <p id="name-error" class="text-xs text-red-600 font-bold mt-1 ml-1 hidden">
+            ⚠️ 喂！名牌空著是要我怎麼發鑰匙？快填上名字！
+          </p>
+        </div>
+
+        <button 
+          id="btn-start"
+          onclick="startQuiz()"
+          class="w-full py-3.5 bg-moss-600 hover:bg-moss-700 active:translate-y-1 active:shadow-btn-active text-white font-black text-base sm:text-lg rounded-2xl border-2 border-wood-900 shadow-btn transition-all duration-150 flex items-center justify-center gap-2"
+        >
+          <span>開始辦理入舍審查</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="mt-4 text-center">
+        <span class="text-[11px] text-wood-600 font-semibold">
+          ⏱️ 審查共 4 題快問快答，僅需 45 秒即可領取專屬入住證書
+        </span>
+      </div>
+    </div>
+
+
+    <!-- ==================== 2. 測驗問答進行畫面 ==================== -->
+    <div id="screen-quiz" class="card-board bg-white rounded-3xl p-5 sm:p-6 relative hidden transition-all duration-300">
+      
+      <!-- 頂端進度條與題號 -->
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-1.5">
+          <span class="text-xs font-black px-2.5 py-0.5 rounded-lg bg-wood-800 text-white" id="question-badge">
+            Q1 / 4
+          </span>
+          <span class="text-xs font-bold text-wood-700" id="question-category">
+            作息與壓力生態
+          </span>
+        </div>
+        <span class="text-xs font-black text-moss-700" id="progress-percent">
+          25%
+        </span>
+      </div>
+
+      <!-- 進度條槽 -->
+      <div class="w-full bg-wood-100 h-2.5 rounded-full overflow-hidden border border-wood-700/20 mb-4">
+        <div id="progress-bar" class="bg-moss-500 h-full rounded-full transition-all duration-300" style="width: 25%"></div>
+      </div>
+
+      <!-- 宿管員即時反應 Bar -->
+      <div class="bg-wood-50 border-2 border-wood-200 rounded-2xl p-3 mb-4 flex items-center gap-3">
+        <div id="quiz-avatar" class="w-12 h-12 flex-shrink-0 bg-wood-100 rounded-xl border border-wood-700/30 flex items-center justify-center text-2xl shadow-inner">
+          🧐
+        </div>
+        <div>
+          <div class="text-[11px] font-black text-wood-600">宿管阿香嘀咕：</div>
+          <div id="quiz-comment" class="text-xs sm:text-sm font-bold text-wood-900 leading-snug">
+            「別想糊弄我，老實交代你的生活習慣！」
+          </div>
+        </div>
+      </div>
+
+      <!-- 題目文字 -->
+      <h2 id="question-text" class="text-base sm:text-lg font-black text-wood-900 mb-4 leading-snug min-h-[50px] flex items-center">
+        題目加載中...
+      </h2>
+
+      <!-- 選項列表 -->
+      <div id="options-container" class="space-y-2.5">
+        <!-- 動態渲染選項按鈕 -->
+      </div>
+    </div>
+
+
+    <!-- ==================== 3. 測驗結果：入舍核准書證書 ==================== -->
+    <div id="screen-result" class="hidden transition-all duration-300">
+      
+      <!-- 證書主卡片 (設計為可截圖發限動的精緻質感) -->
+      <div id="certificate-card" class="card-board bg-white rounded-3xl p-5 sm:p-6 relative overflow-hidden bg-gradient-to-b from-wood-50 via-white to-wood-50">
+        
+        <!-- 背景裝飾浮水印 -->
+        <div class="absolute -right-8 -bottom-8 opacity-5 pointer-events-none">
+          <svg class="w-64 h-64" viewBox="0 0 100 100" fill="currentColor">
+            <path d="M50 15C30 15 15 35 15 55C15 65 30 70 50 70C70 70 85 65 85 55C85 35 70 15 50 15Z"/>
+          </svg>
+        </div>
+
+        <!-- 證書頂部 Header -->
+        <div class="border-b-2 border-dashed border-wood-300 pb-3 mb-4 flex justify-between items-start">
+          <div>
+            <div class="text-[10px] tracking-widest font-black text-wood-600 uppercase">
+              WAIPU MUSHROOM DORMITORY
+            </div>
+            <h2 class="text-xl sm:text-2xl font-black text-wood-900 tracking-tight">
+              🍄 入舍核准審查書
+            </h2>
+          </div>
+          <!-- 審核通過章 -->
+          <div class="badge-stamp px-2.5 py-0.5 rounded text-[11px] font-black uppercase tracking-wider">
+            審核通過・准予入住
+          </div>
+        </div>
+
+        <!-- 房客基本資訊標籤群 -->
+        <div class="grid grid-cols-2 gap-2 text-xs mb-4">
+          <div class="bg-wood-100/70 p-2.5 rounded-xl border border-wood-200">
+            <span class="text-wood-600 font-bold block text-[10px]">認證房客姓名</span>
+            <span id="res-user-name" class="text-sm font-black text-wood-900 truncate block">小香菇</span>
+          </div>
+          <div class="bg-wood-100/70 p-2.5 rounded-xl border border-wood-200">
+            <span class="text-wood-600 font-bold block text-[10px]">專屬入舍編號</span>
+            <span id="res-code" class="text-sm font-black text-wood-900 font-mono tracking-wider block">LZ-2026-NIGHT</span>
+          </div>
+        </div>
+
+        <!-- 角色大徽章與主結果展示 -->
+        <div class="bg-white border-2 border-wood-800 rounded-2xl p-4 shadow-sm mb-4 text-center relative">
+          <!-- 菇種大圖示 -->
+          <div id="res-avatar" class="w-20 h-20 mx-auto -mt-2 mb-2 flex items-center justify-center">
+            <!-- 動態置入 SVG 圖標 -->
+          </div>
+
+          <div id="res-room" class="inline-block bg-wood-800 text-amber-300 text-xs font-black px-3 py-1 rounded-full mb-1">
+            VIP 深層修護養生房
+          </div>
+          <h3 id="res-title" class="text-xl sm:text-2xl font-black text-wood-900 mb-2">
+            熬夜需要養生的靈芝房客
+          </h3>
+
+          <!-- 特徵標籤 -->
+          <div id="res-tags" class="flex flex-wrap justify-center gap-1.5 mb-2">
+            <!-- tags -->
+          </div>
+
+          <p id="res-desc" class="text-xs sm:text-sm text-stone-700 leading-relaxed font-medium bg-wood-50 p-3 rounded-xl border border-wood-200/80 text-left">
+            評語描述加載中...
+          </p>
+        </div>
+
+        <!-- 宿管員專屬傲嬌叮嚀 -->
+        <div class="flex items-start gap-2.5 bg-amber-50 border-2 border-amber-200/80 p-3 rounded-xl mb-4">
+          <span class="text-xl">📢</span>
+          <div>
+            <span class="text-[11px] font-black text-amber-900 block">阿香宿管手寫批註：</span>
+            <p id="res-manager-note" class="text-xs font-bold text-amber-950 leading-snug">
+              「命只有一條，進了這間房，給我把泡麵換成熱香菇雞湯！」
+            </p>
+          </div>
+        </div>
+
+        <!-- 專屬折扣碼區域 -->
+        <div class="bg-moss-50 border-2 border-dashed border-moss-600 rounded-2xl p-3.5 flex items-center justify-between gap-2">
+          <div>
+            <span class="text-[10px] font-black text-moss-700 block uppercase tracking-wider">外埔鮮菇專屬迎新禮券</span>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span id="coupon-code" class="text-base font-black text-wood-900 tracking-widest font-mono">
+                SLEEPWELL
+              </span>
+              <span id="coupon-tag" class="text-[10px] bg-moss-600 text-white font-bold px-1.5 py-0.5 rounded">
+                免運優惠
+              </span>
+            </div>
+          </div>
+          <button 
+            onclick="copyCouponCode()" 
+            class="px-3.5 py-2 bg-moss-600 hover:bg-moss-700 active:scale-95 text-white font-bold text-xs rounded-xl shadow border border-moss-800 transition-all flex items-center gap-1"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+            </svg>
+            <span id="copy-btn-text">複製代碼</span>
+          </button>
+        </div>
+
+        <div class="mt-3 text-center">
+          <span class="text-[10px] text-wood-600 font-bold">
+            📸 截圖此頁面發 IG 限動並 @外埔好菇，抽新鮮特選香菇嚐鮮盒！
+          </span>
+        </div>
+      </div>
+
+      <!-- 操作按鈕群 -->
+      <div class="mt-4 space-y-2.5">
+        <button 
+          onclick="copyShareStory()"
+          class="w-full py-3.5 bg-wood-800 hover:bg-wood-900 active:translate-y-0.5 active:shadow-btn-active text-amber-300 font-black text-base rounded-2xl border-2 border-wood-900 shadow-btn transition-all flex items-center justify-center gap-2"
+        >
+          <svg class="w-5 h-5 text-amber-300" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+          </svg>
+          <span>複製限動打卡分享文案</span>
+        </button>
+
+        <button 
+          onclick="restartQuiz()"
+          class="w-full py-3 bg-white hover:bg-wood-100 active:bg-wood-200 text-wood-800 font-black text-sm rounded-2xl border-2 border-wood-800 transition-all text-center"
+        >
+          🔄 不服氣？找宿管重新審查
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- 頁尾 -->
+  <footer class="w-full max-w-md mx-auto text-center py-2">
+    <p class="text-[11px] font-bold text-wood-700/60">
+      © 外埔菇菇產銷社群推廣專案・天選菇舍宿舍管理處
+    </p>
+  </footer>
+
+  <!-- 浮動提示 Toast -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-wood-900 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-full shadow-xl opacity-0 pointer-events-none toast-transition z-50 flex items-center gap-2 border border-wood-700">
+    <span id="toast-icon">✨</span>
+    <span id="toast-msg">提示訊息</span>
+  </div>
+
+  <script>
+    // ================= 題目資料庫 =================
+    const quizData = [
+      {
+        id: 1,
+        category: "作息與生存生態",
+        question: "期末考週、結案死線逼近時，你的作息通常處於哪種生態系？",
+        comment: "「先別急著裝模作樣，老實講你到底幾點睡？」",
+        avatar: "☕",
+        options: [
+          { text: "仙丹續命型：靠咖啡能量飲硬撐，靈魂出竅但鍵盤還在敲", type: "A", hint: "（典型消耗型菌絲...）" },
+          { text: "隨遇而安型：時間到了就睡，天塌下來當被蓋，隨時能入眠", type: "B", hint: "（生存力意外頑強？）" },
+          { text: "完美強迫型：就算通宵桌面與細節也得整整齊齊、一塵不染", type: "C", hint: "（講究到有點難搞哦）" }
+        ]
+      },
+      {
+        id: 2,
+        category: "租屋冰箱突擊",
+        question: "突擊檢查！打開你租屋處的冰箱或零食櫃，映入眼簾最常見的是？",
+        comment: "「冰箱是最能看出菇菇本性的地方，藏不住的！」",
+        avatar: "🧊",
+        options: [
+          { text: "保養飲品、滴雞精或放了三天的元氣茶包，滿滿求生欲", type: "A", hint: "（看來很需要大補一番）" },
+          { text: "百搭醬料、泡麵冷凍水餃與大包零食，隨時能開火鍋趴", type: "B", hint: "（很適合當交誼廳主廚）" },
+          { text: "擺盤整齊的生鮮優格、精緻小甜點，貼好標籤的低卡點心", type: "C", hint: "（生活儀式感拉滿了）" }
+        ]
+      },
+      {
+        id: 3,
+        category: "交誼社交能量",
+        question: "週末難得沒排班沒上課，宿舍交誼廳有人熱情揪局，你的第一反應是？",
+        comment: "「交誼廳吵死了，看你是要湊熱鬧還是躲回菌絲被窩？」",
+        avatar: "🛋️",
+        options: [
+          { text: "「別找我，我需要閉關深度睡眠，補回被吸乾的元氣菌絲」", type: "A", hint: "（充電格數只剩1%）" },
+          { text: "「有局？+1！誰來我都能聊，火鍋局我負責當夾菜擔當」", type: "B", hint: "（自帶破冰屬性）" },
+          { text: "「看氣氛與陣容，只想跟頻率合得來的精緻小聚，拒絕無效社交」", type: "C", hint: "（品味嚴格篩選中）" }
+        ]
+      },
+      {
+        id: 4,
+        category: "大掃除勞動風格",
+        question: "宿舍年終公共大掃除時，你的勞動風格是？",
+        comment: "「最後一題了！看看公共空間你能不能及格！」",
+        avatar: "🧹",
+        options: [
+          { text: "邊打掃邊捶腰，打掃半小時直接在沙發上石化休眠", type: "A", hint: "（體力條見底警告）" },
+          { text: "哪裡需要幫忙就去哪，擦窗搬重物順便跟大家講笑話", type: "B", hint: "（人見人愛的萬能型）" },
+          { text: "制定嚴格動線與清潔標準，連角落菌絲培養箱都要光潔如新", type: "C", hint: "（根本是副宿管等級）" }
+        ]
+      }
+    ];
+
+    // ================= 結果人格定義 =================
+    const characterResults = {
+      A: {
+        codePrefix: "LZ-2026-NIGHT",
+        title: "熬夜需要養生的靈芝房客",
+        room: "VIP 深層修護養生房",
+        badge: "特選椴木靈芝",
+        coupon: "SLEEPWELL",
+        couponTag: "免運修護券",
+        tags: ["#自帶燃燒屬性", "#鍵盤敲不停", "#宿管最想塞補湯的人"],
+        desc: "你天生自帶燃燒小宇宙的超強責任心，只要開始做事就停不下來！但你的菌絲體質已經在亮紅燈警告。外表看起來冷靜能幹，其實內心渴望一覺睡到自然醒。外埔頂級養生靈芝與厚實乾香菇，正是為你量身打造的元氣後盾！",
+        managerNote: "「命只有一條！進了這間房，不准半夜給我偷開燈敲電腦，快喝碗熱靈芝香菇湯去躺平！」",
+        iconSvg: `
+          <svg class="w-16 h-16 drop-shadow" viewBox="0 0 100 100" fill="none">
+            <path d="M20 50C20 30 35 15 50 15C65 15 80 30 80 50C80 55 75 58 50 58C25 58 20 55 20 50Z" fill="#882D17" stroke="#3A2712" stroke-width="3"/>
+            <path d="M28 42C33 26 67 26 72 42" stroke="#E59866" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M46 58V82C46 84 54 84 54 82V58" fill="#581845" stroke="#3A2712" stroke-width="3"/>
+            <!-- 墨鏡與黑眼圈 -->
+            <ellipse cx="40" cy="42" rx="6" ry="4" fill="#3A2712"/>
+            <ellipse cx="60" cy="42" rx="6" ry="4" fill="#3A2712"/>
+            <path d="M46 42H54" stroke="#3A2712" stroke-width="2"/>
+            <ellipse cx="38" cy="48" rx="5" ry="1.5" fill="#3A2712" opacity="0.3"/>
+            <ellipse cx="62" cy="48" rx="5" ry="1.5" fill="#3A2712" opacity="0.3"/>
+          </svg>
+        `
+      },
+      B: {
+        codePrefix: "ME-2026-CHILL",
+        title: "隨和百搭的黑木耳房客",
+        room: "101 號交誼百搭活力房",
+        badge: "高纖有機黑木耳",
+        coupon: "CHILLMUSH",
+        couponTag: "超值９折碼",
+        tags: ["#脾氣超好", "#火鍋交誼廳C位", "#放在哪裡都合拍"],
+        desc: "你就像餐桌上最百搭的黑木耳與鮮香菇，不管丟進火鍋、涼拌、還是熱炒，都能完美融入環境！朋友圈裡你最隨和好揪、人緣極佳，有你在的地方就不會尷尬。但有時也別因為太好說話而委屈自己，多留點空間寵愛自己吧！",
+        managerNote: "「整個宿舍就你最不挑床位！但既然是交誼廳台柱，今晚大家煮火鍋的菜就交給你洗了！」",
+        iconSvg: `
+          <svg class="w-16 h-16 drop-shadow" viewBox="0 0 100 100" fill="none">
+            <path d="M25 45C20 30 35 20 50 22C65 20 80 30 75 45C72 58 60 65 50 64C40 65 28 58 25 45Z" fill="#3D3635" stroke="#221C1B" stroke-width="3"/>
+            <path d="M35 32C42 28 58 28 65 32" stroke="#7A6F6D" stroke-width="2" stroke-linecap="round"/>
+            <path d="M47 64V80C47 82 53 82 53 80V64" fill="#5A4E4D" stroke="#221C1B" stroke-width="2.5"/>
+            <!-- 笑咪咪眼睛 -->
+            <path d="M38 42C40 40 44 40 46 42" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M54 42C56 40 60 40 62 42" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M47 52C49 55 51 55 53 52" stroke="#FFF" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        `
+      },
+      C: {
+        codePrefix: "SN-2026-PURE",
+        title: "精緻少見的白雪菇房客",
+        room: "302 號高規恆溫精品房",
+        badge: "晶透白雪菇",
+        coupon: "SNOWWHITE",
+        couponTag: "專屬精選禮",
+        tags: ["#細節強迫控", "#生長環境需恆溫", "#美感與品味天花板"],
+        desc: "你對生活有極高的美感要求與堅持，就像對溫濕度極度挑剔的白雪菇。不願將就、絕不盲從，寧可高冷獨處也不要無效社交。雖然照顧起來需要花心思，但只要在適合的環境下，你散發的光采與精緻度絕對是全宿舍最亮眼的存在！",
+        managerNote: "「哎喲，來了位講究的！通風、濕度稍差一點都不滿意。房間准你住了，自己給我維持得一塵不染喔！」",
+        iconSvg: `
+          <svg class="w-16 h-16 drop-shadow" viewBox="0 0 100 100" fill="none">
+            <path d="M30 46C30 25 40 18 50 18C60 18 70 25 70 46C70 52 64 54 50 54C36 54 30 52 30 46Z" fill="#F8F9FA" stroke="#3A2712" stroke-width="3"/>
+            <ellipse cx="50" cy="53" rx="20" ry="4" fill="#E9ECEF" stroke="#3A2712" stroke-width="1.5"/>
+            <rect x="44" y="53" width="12" height="30" rx="6" fill="#FFFFFF" stroke="#3A2712" stroke-width="3"/>
+            <!-- 閃亮小裝飾 -->
+            <path d="M72 26L74 22L76 26L80 28L76 30L74 34L72 30L68 28L72 26Z" fill="#F59E0B"/>
+            <circle cx="43" cy="38" r="2.5" fill="#3A2712"/>
+            <circle cx="57" cy="38" r="2.5" fill="#3A2712"/>
+            <ellipse cx="39" cy="42" rx="2.5" ry="1.5" fill="#FCA5A5"/>
+            <ellipse cx="61" cy="42" rx="2.5" ry="1.5" fill="#FCA5A5"/>
+            <path d="M48 45C49 46 51 46 52 45" stroke="#3A2712" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        `
+      }
+    };
+
+    // ================= 狀態管理 =================
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+    let userName = "";
+    let finalResultKey = "A";
+
+    // DOM 元素快取
+    const screenWelcome = document.getElementById('screen-welcome');
+    const screenQuiz = document.getElementById('screen-quiz');
+    const screenResult = document.getElementById('screen-result');
+    const inputName = document.getElementById('user-name');
+    const nameError = document.getElementById('name-error');
+
+    // 啟動測驗
+    function startQuiz() {
+      const name = inputName.value.trim();
+      if (!name) {
+        nameError.classList.remove('hidden');
+        inputName.focus();
+        return;
+      }
+      nameError.classList.add('hidden');
+      userName = name;
+      currentQuestionIndex = 0;
+      userAnswers = [];
+
+      // 切換螢幕
+      screenWelcome.classList.add('hidden');
+      screenQuiz.classList.remove('hidden');
+      renderQuestion();
+    }
+
+    // 渲染當前題目
+    function renderQuestion() {
+      const q = quizData[currentQuestionIndex];
+      const total = quizData.length;
+      const progress = ((currentQuestionIndex + 1) / total) * 100;
+
+      // 更新進度與標題
+      document.getElementById('question-badge').innerText = `Q${currentQuestionIndex + 1} / ${total}`;
+      document.getElementById('question-category').innerText = q.category;
+      document.getElementById('progress-percent').innerText = `${Math.round(progress)}%`;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+      
+      // 更新宿管表情與對話
+      document.getElementById('quiz-avatar').innerText = q.avatar;
+      document.getElementById('quiz-comment').innerText = q.comment;
+      document.getElementById('question-text').innerText = q.question;
+
+      // 渲染選項按鈕
+      const container = document.getElementById('options-container');
+      container.innerHTML = '';
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left p-3.5 sm:p-4 rounded-2xl bg-wood-50 hover:bg-wood-100 border-2 border-wood-700/50 hover:border-wood-800 transition-all duration-150 flex items-start gap-3 active:scale-[0.99] group";
+        btn.onclick = () => selectOption(opt.type);
+
+        const optionLabels = ["A", "B", "C"];
+        btn.innerHTML = `
+          <span class="inline-flex items-center justify-center w-7 h-7 rounded-xl bg-wood-200 border border-wood-800/40 text-wood-900 font-black text-xs group-hover:bg-moss-500 group-hover:text-white transition-colors flex-shrink-0 mt-0.5">
+            ${optionLabels[idx]}
+          </span>
+          <div class="flex-1">
+            <div class="text-xs sm:text-sm font-bold text-stone-900 leading-snug">
+              ${opt.text}
+            </div>
+            <div class="text-[10px] text-wood-600 font-semibold mt-0.5">
+              ${opt.hint}
+            </div>
+          </div>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    // 選擇答案
+    function selectOption(type) {
+      userAnswers.push(type);
+      if (currentQuestionIndex < quizData.length - 1) {
+        currentQuestionIndex++;
+        renderQuestion();
+      } else {
+        calculateAndShowResult();
+      }
+    }
+
+    // 計算人格結果
+    function calculateAndShowResult() {
+      // 計票
+      const counts = { A: 0, B: 0, C: 0 };
+      userAnswers.forEach(ans => counts[ans] = (counts[ans] || 0) + 1);
+
+      // 找出得票最多者（若平手則依權重順序 A -> B -> C）
+      let maxCount = -1;
+      let winner = 'A';
+      ['A', 'B', 'C'].forEach(type => {
+        if (counts[type] > maxCount) {
+          maxCount = counts[type];
+          winner = type;
+        }
+      });
+
+      finalResultKey = winner;
+      const res = characterResults[winner];
+
+      // 隨機產生入舍流水號
+      const randomId = Math.floor(1000 + Math.random() * 9000);
+      const fullCode = `${res.codePrefix}-${randomId}`;
+
+      // 填入資料
+      document.getElementById('res-user-name').innerText = userName;
+      document.getElementById('res-code').innerText = fullCode;
+      document.getElementById('res-room').innerText = res.room;
+      document.getElementById('res-title').innerText = res.title;
+      document.getElementById('res-desc').innerText = res.desc;
+      document.getElementById('res-manager-note').innerText = res.managerNote;
+      document.getElementById('coupon-code').innerText = res.coupon;
+      document.getElementById('coupon-tag').innerText = res.couponTag;
+      document.getElementById('res-avatar').innerHTML = res.iconSvg;
+
+      // 標籤群
+      const tagsContainer = document.getElementById('res-tags');
+      tagsContainer.innerHTML = '';
+      res.tags.forEach(t => {
+        const tagSpan = document.createElement('span');
+        tagSpan.className = "text-[10px] font-bold bg-wood-100 text-wood-800 px-2 py-0.5 rounded-md border border-wood-300";
+        tagSpan.innerText = t;
+        tagsContainer.appendChild(tagSpan);
+      });
+
+      // 切換畫面
+      screenQuiz.classList.add('hidden');
+      screenResult.classList.remove('hidden');
+
+      // 施放慶祝紙花
+      triggerConfetti();
+    }
+
+    // 紙花特效
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.6 },
+          colors: ['#5F8D4E', '#8C6D46', '#E5D7B7', '#A84435']
+        });
+      }
+    }
+
+    // 複製折扣碼
+    function copyCouponCode() {
+      const code = characterResults[finalResultKey].coupon;
+      copyToClipboard(code);
+      
+      const copyBtnText = document.getElementById('copy-btn-text');
+      copyBtnText.innerText = "已複製！";
+      showToast("🏷️ 專屬折扣代碼已複製到剪貼簿！");
+      setTimeout(() => {
+        copyBtnText.innerText = "複製代碼";
+      }, 2000);
+    }
+
+    // 複製社群限動分享文案
+    function copyShareStory() {
+      const res = characterResults[finalResultKey];
+      const shareText = `🍄 我通過了【外埔菇菇宿舍】入舍心理測驗！
+房客姓名：${userName}
+天選身份：${res.title}
+分發房型：${res.room}
+宿管阿香評語：${res.managerNote}
+專屬迎新密語：【${res.coupon}】
+
+快來測測你是哪種天選菇菇房客！👉`;
+
+      copyToClipboard(shareText);
+      showToast("📋 限動打卡文案已複製！快去發 IG / LINE 吧！");
+    }
+
+    // 輔助函式：相容性剪貼簿複製
+    function copyToClipboard(text) {
+      const tempInput = document.createElement("textarea");
+      tempInput.value = text;
+      tempInput.style.position = "fixed";
+      tempInput.style.opacity = "0";
+      document.body.appendChild(tempInput);
+      tempInput.focus();
+      tempInput.select();
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('無法複製', err);
+      }
+      document.body.removeChild(tempInput);
+    }
+
+    // 提示 Toast 控制
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      toastMsg.innerText = message;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+
+    // 重新測驗
+    function restartQuiz() {
+      screenResult.classList.add('hidden');
+      screenWelcome.classList.remove('hidden');
+      inputName.value = "";
+    }
+
+    // 鍵盤 Enter 鍵直通測驗
+    inputName.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        startQuiz();
+      }
+    });
+  </script>
+</body>
+</html>
